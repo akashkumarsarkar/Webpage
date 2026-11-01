@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RLC Series Circuit Transient Response by Akash</title>
+    <title>RLC Series Circuit Transient Response Dashboard</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -30,9 +30,9 @@
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                     <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    RLC Transient Response Analyzer (Simulink Style)
+                    RLC Transient Response Analyzer (By A.K.SARKAR)
                 </h1>
-                <p class="text-xs sm:text-sm text-slate-400">Series RLC Circuit Simulation | Units: Time t in Seconds (sec), Current i(t) in Amperes (A)</p>
+                <p class="text-xs sm:text-sm text-slate-400">Series RLC Circuit Simulation | Units: Time t in Seconds (sec), Current i(t) in Milliamperes (mA)</p>
             </div>
             <div class="flex items-center gap-2 bg-slate-800/80 p-1.5 rounded-lg border border-slate-700 text-xs sm:text-sm">
                 <span class="text-slate-400 px-2 font-medium">Input Signal:</span>
@@ -194,14 +194,14 @@
                     <div>
                         <h3 class="text-base font-semibold text-white flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
-                            Scope 2: Series Current $i(t)$ [A]
+                            Scope 2: Series Current $i(t)$ [mA]
                         </h3>
-                        <p class="text-xs text-slate-400">Horizontal: Time $t$ (sec) | Vertical: Current $i(t)$ (Amperes)</p>
+                        <p class="text-xs text-slate-400">Horizontal: Time $t$ (sec) | Vertical: Current $i(t)$ (mA)</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="text-right font-mono text-xs">
                             <span class="text-slate-400">Peak Current: </span>
-                            <span id="peak-i" class="text-emerald-400 font-bold">0.000100 A</span>
+                            <span id="peak-i" class="text-emerald-400 font-bold">0.1000 mA</span>
                         </div>
                     </div>
                 </div>
@@ -398,7 +398,7 @@
             for (let i = 0; i <= numPoints; i++) {
                 const t = (i / numPoints) * tMaxSec; // Time strictly in seconds (sec)
                 let vc = 0;
-                let current = 0; // Current strictly in Amperes (A)
+                let current = 0; // Current in Amperes (A) initially
 
                 if (stateType === 'overdamped') {
                     const wd = Math.sqrt(alpha * alpha - omega0 * omega0);
@@ -442,17 +442,19 @@
                     }
                 }
 
+                const currentmA = current * 1000; // Convert to milliamperes (mA)
+
                 timeData.push(t.toFixed(4));
                 vcData.push(vc);
-                iData.push(current); // In Amperes (A)
+                iData.push(currentmA); // Store in mA
 
                 if (Math.abs(vc) > Math.abs(peakVc)) peakVc = vc;
-                if (Math.abs(current) > Math.abs(peakI)) peakI = current;
+                if (Math.abs(currentmA) > Math.abs(peakI)) peakI = currentmA;
             }
 
             // Update Peak Display
             document.getElementById('peak-vc').innerText = `${peakVc.toFixed(4)} V`;
-            document.getElementById('peak-i').innerText = `${peakI.toExponential(4)} A`;
+            document.getElementById('peak-i').innerText = `${peakI.toFixed(4)} mA`;
 
             // Render Charts
             renderVoltageChart(timeData, vcData);
@@ -525,7 +527,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'Current i(t) (A)',
+                        label: 'Current i(t) (mA)',
                         data: [],
                         borderColor: '#34d399',
                         backgroundColor: 'rgba(52, 211, 153, 0.1)',
@@ -543,9 +545,9 @@
                             ...chartOptionsBase.scales.y,
                             ticks: {
                                 color: '#94a3b8',
-                                callback: function(value) { return value.toExponential(1) + ' A'; }
+                                callback: function(value) { return value.toFixed(3) + ' mA'; }
                             },
-                            title: { display: true, text: 'Series Current i(t) (A)', color: '#34d399', font: { size: 12, weight: 'bold' } }
+                            title: { display: true, text: 'Series Current i(t) (mA)', color: '#34d399', font: { size: 12, weight: 'bold' } }
                         }
                     }
                 }
